@@ -2,15 +2,15 @@ import streamlit as st
 import datetime
 import pandas as pd
 
-# Oldal konfigur·ciÛ
-st.set_page_config(page_title="CT EffektÌv DÛzis Kalkul·tor", page_icon="??", layout="centered")
+# Oldal konfigur√°ci√≥
+st.set_page_config(page_title="CT Effekt√≠v D√≥zis Kalkul√°tor", page_icon="??", layout="centered")
 
-st.title("?? CT EffektÌv DÛzis Kalkul·tor")
-st.markdown("Sz·mÌtsd ki gyorsan a CT vizsg·latok effektÌv dÛzis·t (DLP alapj·n) az ICRP 103 szabv·ny szerint[cite: 1].")
+st.title("?? CT Effekt√≠v D√≥zis Kalkul√°tor")
+st.markdown("Sz√°m√≠tsd ki gyorsan a CT vizsg√°latok effekt√≠v d√≥zis√°t (DLP alapj√°n) az ICRP 103 szabv√°ny szerint[cite: 1].")
 
-# Standard ICRP 103 / AAPM felnıtt k-tÈnyezık (mSv / (mGy * cm))[cite: 1]
+# Standard ICRP 103 / AAPM feln√µtt k-t√©nyez√µk (mSv / (mGy * cm))[cite: 1]
 K_FACTORS = {
-    "EgÈsz test / ¡ltal·nos (0.015)": 0.015,
+    "Eg√©sz test / √Åltal√°nos (0.015)": 0.015,
     "Has - Kismedence (0.015)": 0.015,
     "Mellkas - Has - Kismedence (0.015)": 0.015,
     "Mellkas (0.014)": 0.014,
@@ -18,7 +18,7 @@ K_FACTORS = {
     "Koponya (0.0021)": 0.0021
 }
 
-# Beviteli mezık a fel¸leten
+# Beviteli mez√µk a fel√ºleten
 col1, col2 = st.columns(2)
 
 with col1:
@@ -26,34 +26,34 @@ with col1:
 with col2:
     dlp_szoveg = st.text_input("DLP (mGy*cm):", "500")[cite: 1]
 
-# AnatÛmiai rÈgiÛ v·lasztÛ
-regio_nev = st.selectbox("AnatÛmiai rÈgiÛ (k):", list(K_FACTORS.keys()))[cite: 1]
+# Anat√≥miai r√©gi√≥ v√°laszt√≥
+regio_nev = st.selectbox("Anat√≥miai r√©gi√≥ (k):", list(K_FACTORS.keys()))[cite: 1]
 
-# Egyedi k-tÈnyezı opciÛ
-egyedi_aktiv = st.checkbox("Egyedi k-tÈnyezı megad·sa")[cite: 1]
+# Egyedi k-t√©nyez√µ opci√≥
+egyedi_aktiv = st.checkbox("Egyedi k-t√©nyez√µ megad√°sa")[cite: 1]
 if egyedi_aktiv:
-    k_ertek = st.number_input("Egyedi k-ÈrtÈk:", value=0.015, format="%.5f")[cite: 1]
-    regio_nev = "Egyedi k-tÈnyezı"[cite: 1]
+    k_ertek = st.number_input("Egyedi k-√©rt√©k:", value=0.015, format="%.5f")[cite: 1]
+    regio_nev = "Egyedi k-t√©nyez√µ"[cite: 1]
 else:
     k_ertek = K_FACTORS[regio_nev][cite: 1]
 
-# Sz·mÌt·s gomb
-if st.button("Kisz·mÌt·s", type="primary"):
+# Sz√°m√≠t√°s gomb
+if st.button("Kisz√°m√≠t√°s", type="primary"):
     try:
         dlp_ertek = float(dlp_szoveg)
         ctdi_ertek = float(ctdi_szoveg) if ctdi_szoveg else 0.0
         
         if dlp_ertek < 0 or ctdi_ertek < 0:
-            st.error("Az ÈrtÈkek nem lehetnek negatÌvak!")[cite: 1]
+            st.error("Az √©rt√©kek nem lehetnek negat√≠vak!")[cite: 1]
         else:
-            # EffektÌv dÛzis sz·mÌt·s[cite: 1]
+            # Effekt√≠v d√≥zis sz√°m√≠t√°s[cite: 1]
             effektiv_dozis = k_ertek * dlp_ertek
             
-            # EredmÈny megjelenÌtÈse
-            st.success(f"**Sz·mÌtott effektÌv dÛzis (E):** {effektiv_dozis:.3f} mSv")[cite: 1]
-            st.info(f"CTDIvol: {ctdi_ertek} mGy | DLP: {dlp_ertek} mGy*cm (k-tÈnyezı: {k_ertek} mSv/(mGy*cm))")[cite: 1]
+            # Eredm√©ny megjelen√≠t√©se
+            st.success(f"**Sz√°m√≠tott effekt√≠v d√≥zis (E):** {effektiv_dozis:.3f} mSv")[cite: 1]
+            st.info(f"CTDIvol: {ctdi_ertek} mGy | DLP: {dlp_ertek} mGy*cm (k-t√©nyez√µ: {k_ertek} mSv/(mGy*cm))")[cite: 1]
             
-            # Adatok t·rol·sa a letˆltÈshez
+            # Adatok t√°rol√°sa a let√∂lt√©shez
             adat = [{
                 "Datum_Ido": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),[cite: 1]
                 "Regio_k": regio_nev,[cite: 1]
@@ -64,14 +64,14 @@ if st.button("Kisz·mÌt·s", type="primary"):
             }]
             df = pd.DataFrame(adat)
             
-            # CSV letˆltı gomb
+            # CSV let√∂lt√µ gomb
             csv_data = df.to_csv(index=False, sep=";").encode("cp1252", errors="ignore")
             st.download_button(
-                label="?? EredmÈny mentÈse CSV-be",
+                label="?? Eredm√©ny ment√©se CSV-be",
                 data=csv_data,
                 file_name="ct_dozis_eredmeny.csv",
                 mime="text/csv"
             )
             
     except ValueError:
-        st.error("KÈrlek ÈrvÈnyes sz·mokat adj meg!")[cite: 1]
+        st.error("K√©rlek √©rv√©nyes sz√°mokat adj meg!")[cite: 1]
